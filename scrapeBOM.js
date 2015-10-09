@@ -1,25 +1,68 @@
-// var webPage = require('webpage');
-// var page = webPage.create();
+function waitFor(testFx, onReady, timeOutMillis) {
+    var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
+        start = new Date().getTime(),
+        condition = false,
+        interval = setInterval(function() {
+            if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
+                // If not time-out yet and condition not yet fulfilled
+                condition = (typeof(testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
+            } else {
+                if(!condition) {
+                    // If condition still not fulfilled (timeout but condition is 'false')
+                    console.log("'waitFor()' timeout");
+                    phantom.exit(1);
+                } else {
+                    // Condition fulfilled (timeout and/or condition is 'true')
+                    console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
+                    typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
+                    clearInterval(interval); //< Stop this interval
+                }
+            }
+        }, 250); //< repeat check every 250ms
+};
+
 var webPage = require('webpage');
 page = webPage.create();
 
 // var fs = require('fs');
 // var path = 'boxOffice.html';
 
-
-
-page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function(status) {
-	page.includeJs("http://code.jquery.com/jquery-2.1.4.js", function() {
-		var minsik = page.evaluate(function() {
-			$("tbody:nth-child(1) a").click();
-			window.setTimeout(function() {
-				return document.querySelector("div.layerBox").getAttribute("style");
-			}, 1000);
-		});
-		console.log(minsik);
-		phantom.exit();
-	});
+page.open("http://twitter.com/#!/sencha", function (status) {
+    // Check for page load success
+    if (status !== "success") {
+        console.log("Unable to access network");
+    } else {
+    	page.includeJS("http://code.jquery.com/jquery-2.1.4.js", function() {
+			console.log($("table#table_former").is(":visible"));
+    		page.evaluate(function() {
+    			console.log($("table#table_former").is(":visible"));
+    			console.log($("td#td_rank:contains('1') + td a").is(":visible"));
+    			$("td#td_rank:contains('1') + td a").click();
+    			waitFor(function() {
+    				return page.evaluate(function() {
+                		return $("#20129370_staff").is(":visible");
+    				});
+    			}, function() {
+    				console.log("Actor list should be visible now.");
+    				phantom.exit();
+    			});
+    		});
+    	});     
+    }
 });
+
+// page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function(status) {
+// 	page.includeJs("http://code.jquery.com/jquery-2.1.4.js", function() {
+// 		var minsik = page.evaluate(function() {
+// 			$("tbody:nth-child(1) a").click();
+// 			window.setTimeout(function() {
+// 				return document.querySelector("div.layerBox").getAttribute("style");
+// 			}, 200);
+// 		});
+// 		console.log(minsik);
+// 		phantom.exit();
+// 	});
+// });
 
 // var page = require('webpage').create();
 // page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function(status) {
