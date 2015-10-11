@@ -27,26 +27,21 @@ page = webPage.create();
 // var fs = require('fs');
 // var path = 'boxOffice.html';
 
-page.open("http://twitter.com/#!/sencha", function (status) {
+page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function (status) {
     // Check for page load success
     if (status !== "success") {
         console.log("Unable to access network");
     } else {
-    	page.includeJS("http://code.jquery.com/jquery-2.1.4.js", function() {
-			console.log($("table#table_former").is(":visible"));
-    		page.evaluate(function() {
-    			console.log($("table#table_former").is(":visible"));
-    			console.log($("td#td_rank:contains('1') + td a").is(":visible"));
-    			$("td#td_rank:contains('1') + td a").click();
-    			waitFor(function() {
-    				return page.evaluate(function() {
-                		return $("#20129370_staff").is(":visible");
-    				});
-    			}, function() {
-    				console.log("Actor list should be visible now.");
-    				phantom.exit();
-    			});
-    		});
+    	page.includeJs("http://code.jquery.com/jquery-2.1.4.js", function() {
+			console.log("came into includeJs");
+            waitFor(function() {
+                return page.evaluate(function() {
+                    return $("#sRepNationCd").is(":visible");
+                });
+            }, function() {
+                console.log("Found #sRepNationCd");
+                phantom.exit();
+            });
     	});     
     }
 });

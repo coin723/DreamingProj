@@ -11,14 +11,14 @@
  * @param timeOutMillis the max amount of time to wait. If not specified, 3 sec is used.
  */
 function waitFor(testFx, onReady, timeOutMillis) {
-    var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 25000, //< Default Max Timout is 3s
+    var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
         start = new Date().getTime(),
         condition = false,
         interval = setInterval(function() {
             if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
                 // If not time-out yet and condition not yet fulfilled
-                console.log("Running");
-                condition = (typeof testFx === "boolean" ? eval(testFx) : testFx()); //< defensive code
+                // console.log("Running");
+                condition = (typeof testFx === "string" ? eval(testFx) : testFx()); //< defensive code
             } else {
                 if(!condition) {
                     // If condition still not fulfilled (timeout but condition is 'false')
@@ -31,7 +31,7 @@ function waitFor(testFx, onReady, timeOutMillis) {
                     clearInterval(interval); //< Stop this interval
                 }
             }
-        }, 5000); //< repeat check every 250ms
+        }, 250); //< repeat check every 250ms
 };
 
 
@@ -44,13 +44,14 @@ page.open("http://www.google.co.kr", function (status) {
         console.log("Unable to access network");
     } else {
         // Wait for 'signin-dropdown' to be visible
-        console.log("came to 'else'");
-        page.includeJs('http://code.jquery.com/jquery-2.1.4.js', function() {
-            console.log("came to injectJs");
+        // console.log("came to 'else'");
+        page.includeJs('http://code.jquery.com/jquery-2.1.4.js', function() { //page.includeJs 안에서 돌리는 게 핵심
+            // console.log("came to includeJs");
             waitFor(function() {
             // Check in the page if a specific element is now visible
+            // return $("[title='Google']").is(":visible");
             return page.evaluate(function() {
-                return $("div").is(":visible");
+                return $("[title='Google']").is(":visible");
                 // page.evaluate(function() {
                 //     return $("div").is(":visible");
                 // });
