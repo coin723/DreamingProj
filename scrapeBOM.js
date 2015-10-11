@@ -34,12 +34,14 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
     } else {
     	page.includeJs("http://code.jquery.com/jquery-2.1.4.js", function() {
 			console.log("came into includeJs");
+            $("td#td_rank:contains(1) + td a").click();
+            console.log("clicked");
             waitFor(function() {
                 return page.evaluate(function() {
-                    return $("#sRepNationCd").is(":visible");
+                    return $("#20129370_staff").is(":visible");
                 });
             }, function() {
-                console.log("Found #sRepNationCd");
+                console.log("Found #20129370_staff");
                 phantom.exit();
             });
     	});     
