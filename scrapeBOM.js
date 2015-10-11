@@ -34,7 +34,9 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
     } else {
     	page.includeJs("http://code.jquery.com/jquery-2.1.4.js", function() {
 			console.log("came into includeJs");
-            $("td#td_rank:contains(1) + td a").click();
+            $("a[onclick='mstView(\'movie\',\'20129370\');return false;']").click(function() {
+                console.log("inside click");
+            });
             console.log("clicked");
             waitFor(function() {
                 return page.evaluate(function() {
