@@ -1,25 +1,25 @@
-function waitFor(testFx, onReady, timeOutMillis) {
-    var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
-        start = new Date().getTime(),
-        condition = false,
-        interval = setInterval(function() {
-            if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
-                // If not time-out yet and condition not yet fulfilled
-                condition = (typeof(testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
-            } else {
-                if(!condition) {
-                    // If condition still not fulfilled (timeout but condition is 'false')
-                    console.log("'waitFor()' timeout");
-                    phantom.exit(1);
-                } else {
-                    // Condition fulfilled (timeout and/or condition is 'true')
-                    console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
-                    typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
-                    clearInterval(interval); //< Stop this interval
-                }
-            }
-        }, 250); //< repeat check every 250ms
-};
+// function waitFor(testFx, onReady, timeOutMillis) {
+//     var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
+//         start = new Date().getTime(),
+//         condition = false,
+//         interval = setInterval(function() {
+//             if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
+//                 // If not time-out yet and condition not yet fulfilled
+//                 condition = (typeof(testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
+//             } else {
+//                 if(!condition) {
+//                     // If condition still not fulfilled (timeout but condition is 'false')
+//                     console.log("'waitFor()' timeout");
+//                     phantom.exit(1);
+//                 } else {
+//                     // Condition fulfilled (timeout and/or condition is 'true')
+//                     console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
+//                     typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
+//                     clearInterval(interval); //< Stop this interval
+//                 }
+//             }
+//         }, 250); //< repeat check every 250ms
+// };
 
 var webPage = require('webpage');
 page = webPage.create();
@@ -27,26 +27,55 @@ page = webPage.create();
 // var fs = require('fs');
 // var path = 'boxOffice.html';
 
+page.onConsoleMessage = function(msg) {
+    console.log("do that" + msg);
+};
+
 page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function (status) {
     // Check for page load success
     if (status !== "success") {
         console.log("Unable to access network");
     } else {
-    	page.includeJs("http://code.jquery.com/jquery-2.1.4.js", function() {
-			console.log("came into includeJs");
-            $("a[onclick='mstView(\'movie\',\'20129370\');return false;']").click(function() {
-                console.log("inside click");
-            });
-            console.log("clicked");
+        console.log("inside else");
+        var clNm = page.evaluate(function() {
+            function waitFor(testFx, onReady, timeOutMillis) {       
+                var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
+                start = new Date().getTime(),
+                condition = false,
+                interval = setInterval(function() {
+                    if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
+                        // If not time-out yet and condition not yet fulfilled
+                        condition = (typeof(testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
+                    } else {
+                        if(!condition) {
+                        // If condition still not fulfilled (timeout but condition is 'false')
+                        console.log("'waitFor()' timeout");
+                        // phantom.exit(1);
+                        } else {
+                            // Condition fulfilled (timeout and/or condition is 'true')
+                            console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
+                            typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
+                            clearInterval(interval); //< Stop this interval
+                        }
+                    }
+                }, 250); //< repeat check every 250ms
+            };
+
+
+            document.querySelector("a.boxMNm").click();
             waitFor(function() {
-                return page.evaluate(function() {
-                    return $("#20129370_staff").is(":visible");
-                });
+                return document.querySelector("[role='dialog']");
+                // return page.evaluate(function() {
+                //     return document.querySelector("#20129370_staff");
+                // });
             }, function() {
-                console.log("Found #20129370_staff");
-                phantom.exit();
-            });
-    	});     
+                return document.querySelector("article dl dd").innerHTML;
+            });  
+            // return document.querySelector("a.boxMNm").getAttribute("class"); // 동작은 evaluate() 안에서
+        });
+        console.log(clNm);//.dispatchEvent('click');
+        console.log("pass dispatchEvent");
+        phantom.exit();
     }
 });
 
