@@ -37,7 +37,7 @@ function waitFor(testFx, onReady, timeOutMillis) {
 var page = require('webpage').create();
 
 // Open Twitter on 'sencha' profile and, onPageLoad, do...
-page.open("http://twitter.com/#!/sencha", function (status) {
+page.open("http://www.google.co.kr", function (status) {
     // Check for page load success
     if (status !== "success") {
         console.log("Unable to access network");
@@ -46,7 +46,7 @@ page.open("http://twitter.com/#!/sencha", function (status) {
         waitFor(function() {
             // Check in the page if a specific element is now visible
             return page.evaluate(function() {
-                return $("#signin-dropdown").is(":visible");
+                return $("[title="google"]").is(":visible");
             });
         }, function() {
            console.log("The sign-in dialog should be visible now.");
