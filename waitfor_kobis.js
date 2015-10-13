@@ -33,25 +33,56 @@ function waitFor(testFx, onReady, timeOutMillis) {
         }, 250); //< repeat check every 250ms
 };
 
+// function simulateClick() {
+//   var event = new MouseEvent('click', {
+//     'view': window,
+//     'bubbles': true,
+//     'cancelable': true
+//   });
+//   var ab = document.querySelector('a.boxMNm'); 
+//   var canceled = !ab.dispatchEvent(event);
+//   if (canceled) {
+//     // A handler called preventDefault.
+//     console.log("canceled");
+//   } else {
+//     // None of the handlers called preventDefault.
+//     console.log("not canceled");
+//   }
+// }
 
 var page = require('webpage').create();
 
 // Open Twitter on 'sencha' profile and, onPageLoad, do...
-page.open("http://twitter.com/#!/sencha", function (status) {
+page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function (status) {
     // Check for page load success
     if (status !== "success") {
         console.log("Unable to access network");
     } else {
-        // Wait for 'signin-dropdown' to be visible
+        console.log("inside else");
+        page.evaluate(function() {
+            document.querySelector("a.boxMNm").click();
+        });
+        // var txtCnt = firstAn.textContent;
+        // console.log(txtCnt);
+        console.log("Clicked");
         waitFor(function() {
-            // Check in the page if a specific element is now visible
             return page.evaluate(function() {
-                return document.querySelector("#signin-dropdown"); // Exclude jQuery selector, since includeJs doesn't work for Twitter
+                return document.querySelector("li.peopContSub2 + li a");
             });
         }, function() {
-           console.log("The sign-in dialog should be visible now.");
-           phantom.exit();
-        });        
+            // console.log("the div.staffMore element should be visible now.");
+            console.log("the actor list should be visible now.");
+            var minsik = page.evaluate(function() {
+                if(typeof document.querySelector("li.peopContSub2 + li a") === 'undefined') {
+                    return "Fail";
+                } else {
+                    return document.querySelector("li.peopContSub2 + li a").getAttribute("onclick");
+                }
+            });
+            console.log(minsik);
+            phantom.exit();
+        }); 
+
     }
 });
 

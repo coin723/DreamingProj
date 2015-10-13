@@ -17,7 +17,7 @@ function waitFor(testFx, onReady, timeOutMillis) {
         interval = setInterval(function() {
             if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
                 // If not time-out yet and condition not yet fulfilled
-                condition = (typeof testFx === "string" ? eval(testFx) : testFx()); //< defensive code
+                condition = (typeof(testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
             } else {
                 if(!condition) {
                     // If condition still not fulfilled (timeout but condition is 'false')
@@ -26,7 +26,7 @@ function waitFor(testFx, onReady, timeOutMillis) {
                 } else {
                     // Condition fulfilled (timeout and/or condition is 'true')
                     console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
-                    typeof onReady === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
+                    typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
                     clearInterval(interval); //< Stop this interval
                 }
             }
@@ -42,16 +42,28 @@ page.open("http://twitter.com/#!/sencha", function (status) {
     if (status !== "success") {
         console.log("Unable to access network");
     } else {
-        // Wait for 'signin-dropdown' to be visible
+        console.log("inside else");
         waitFor(function() {
-            // Check in the page if a specific element is now visible
             return page.evaluate(function() {
-                return document.querySelector("#signin-dropdown"); // Exclude jQuery selector, since includeJs doesn't work for Twitter
+                return document.querySelector("#signin-dropdown");
             });
         }, function() {
-           console.log("The sign-in dialog should be visible now.");
-           phantom.exit();
-        });        
+            console.log("the sign-in dialog should be visible now.");
+            phantom.exit();
+        });
+        // page.includeJs('http://code.jquery.com/jquery-2.1.4.js', function() {
+        //     // Wait for 'signin-dropdown' to be visible
+        //     console.log("inside includeJs");
+        //     waitFor(function() {
+        //         //Check in the page if a specific elements is now visible
+        //         return page.evaluate(function() {
+        //             return $("#signin-dropdown").is(":visible");
+        //         });
+        //     }, function() {
+        //         console.log("the sign-in dialog should be visible now.");
+        //         phantom.exit();
+        //     });
+        // });      
     }
 });
 

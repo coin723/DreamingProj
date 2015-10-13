@@ -28,7 +28,7 @@ page = webPage.create();
 // var path = 'boxOffice.html';
 
 page.onConsoleMessage = function(msg) {
-    console.log("do that" + msg);
+    console.log(msg);
 };
 
 page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function (status) {
@@ -37,6 +37,7 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
         console.log("Unable to access network");
     } else {
         console.log("inside else");
+        // console.log("a.boxMNm here?: " + document.querySelector("a").textContent);
         var clNm = page.evaluate(function() {
             function waitFor(testFx, onReady, timeOutMillis) {       
                 var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
@@ -45,7 +46,7 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
                 interval = setInterval(function() {
                     if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
                         // If not time-out yet and condition not yet fulfilled
-                        condition = (typeof(testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
+                        condition = (typeof testFx === "string" ? eval(testFx) : testFx()); //< defensive code
                     } else {
                         if(!condition) {
                         // If condition still not fulfilled (timeout but condition is 'false')
@@ -54,27 +55,27 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
                         } else {
                             // Condition fulfilled (timeout and/or condition is 'true')
                             console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
-                            typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
+                            typeof onReady === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
                             clearInterval(interval); //< Stop this interval
                         }
                     }
                 }, 250); //< repeat check every 250ms
             };
 
-
-            document.querySelector("a.boxMNm").click();
-            waitFor(function() {
-                return document.querySelector("[role='dialog']");
+            // document.querySelector("a.boxMNm").click();
+            var waitresult = waitFor(function() {
+                return document.querySelector("div.board_top");
                 // return page.evaluate(function() {
                 //     return document.querySelector("#20129370_staff");
                 // });
             }, function() {
-                return document.querySelector("article dl dd").innerHTML;
+                return document.querySelector("em").innerHTML;
             });  
             // return document.querySelector("a.boxMNm").getAttribute("class"); // 동작은 evaluate() 안에서
+            return waitresult;
         });
-        console.log(clNm);//.dispatchEvent('click');
-        console.log("pass dispatchEvent");
+        console.log("Result here: " + clNm);//.dispatchEvent('click');
+        console.log("End of the code");
         phantom.exit();
     }
 });
