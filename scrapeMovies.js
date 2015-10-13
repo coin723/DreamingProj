@@ -1,9 +1,9 @@
 function waitFor(testFx, onReady, timeOutMillis) {
     var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
-        start = new Date().getTime(),
-        condition = false,
-        interval = setInterval(function() {
-            if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
+    start = new Date().getTime(),
+    condition = false,
+    interval = setInterval(function() {
+        if ( (new Date().getTime() - start < maxtimeOutMillis) && !condition ) {
                 // If not time-out yet and condition not yet fulfilled
                 condition = (typeof testFx === "string" ? eval(testFx) : testFx()); //< defensive code
             } else {
@@ -45,14 +45,20 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
         for (var i = movieLinks.length - 200; i >= 0; i--) {
             console.log("inside for loop");
             console.log(i + "th movie");
-            page.evaluate(function(index) {
-                console.log(index + ": index in evaluating click");
-                document.querySelectorAll("a.boxMNm")[index].click();
-            }, i);
+            // page.evaluate(function(index) {
+            //     console.log(index + ": index in evaluating click");
+            //     document.querySelectorAll("a.boxMNm")[index].click();
+            // }, i);
+            page.evaluate(function() {
+                document.querySelectorAll("a.boxMNm")[0].click();
+            });
+            var tmp = page.evaluate(function() {
+                return document.querySelectorAll("a.boxMNm")[0].textContent;
+            });
+            console.log(tmp);
             console.log("Clicked");
             console.log(i);
-            console.log(i);
-            // console.log(page.content);
+
             waitFor(function() {
                 return page.evaluate(function() {
                     return document.querySelector("li.peopContSub2 + li a");
@@ -67,16 +73,17 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
                     }
                 });
                 console.log(firstActor);
-                console.log(i);
                 page.evaluate(function() {
-                document.querySelector("a.layer_close").click();
-                }, 10000);
+                    document.querySelector("a.layer_close").click();
+                }); 
                 console.log(i);
-                if(i === -1) {
-                    phantom.exit();
-                }
             });
-        } 
+            if(i <= 0) {
+                console.log(i);
+                phantom.exit();
+            }
+        }
+        // phantom.exit();
     }
 });
 
