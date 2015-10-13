@@ -29,9 +29,9 @@ function waitFor(testFx, onReady, timeOutMillis) {
 
 var page = require('webpage').create();
 
-page.onConsoleMessage = function(msg) {
-  console.log(msg);
-};
+// page.onConsoleMessage = function(msg) {
+//   console.log(msg);
+// };
 
 page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function (status) {
     if (status !== "success") {
@@ -42,7 +42,7 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
             return document.querySelectorAll("a.boxMNm");
         });
         console.log(typeof movieLinks);
-        for (var i = movieLinks.length - 199; i >= 0; i--) {
+        for (var i = movieLinks.length - 200; i >= 0; i--) {
             console.log("inside for loop");
             console.log(i + "th movie");
             page.evaluate(function(index) {
@@ -50,6 +50,7 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
                 document.querySelectorAll("a.boxMNm")[index].click();
             }, i);
             console.log("Clicked");
+            console.log(i);
             console.log(i);
             // console.log(page.content);
             waitFor(function() {
@@ -66,6 +67,7 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
                     }
                 });
                 console.log(firstActor);
+                console.log(i);
                 page.evaluate(function() {
                 document.querySelector("a.layer_close").click();
                 }, 10000);
