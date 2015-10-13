@@ -29,6 +29,10 @@ function waitFor(testFx, onReady, timeOutMillis) {
 
 var page = require('webpage').create();
 
+page.onConsoleMessage = function(msg) {
+  console.log(msg);
+};
+
 page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeList.do?loadEnd=0&searchType=search&sMultiMovieYn=&sRepNationCd=K&sWideAreaCd=", function (status) {
     if (status !== "success") {
         console.log("Unable to access network");
@@ -38,14 +42,17 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
             return document.querySelectorAll("a.boxMNm");
         });
         console.log(typeof movieLinks);
-        for (var i = movieLinks.length - 1; i >= 0; i--) {
+        for (var i = movieLinks.length - 199; i >= 0; i--) {
             console.log("inside for loop");
             console.log(i + "th movie");
             page.evaluate(function(index) {
+                console.log(index + ": index in evaluating click");
                 document.querySelectorAll("a.boxMNm")[index].click();
             }, i);
             console.log("Clicked");
-            var fActor = waitFor(function() {
+            console.log(i);
+            // console.log(page.content);
+            waitFor(function() {
                 return page.evaluate(function() {
                     return document.querySelector("li.peopContSub2 + li a");
                 });
@@ -58,14 +65,16 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
                         return document.querySelector("li.peopContSub2 + li a").getAttribute("onclick");
                     }
                 });
-                return firstActor;
-            });
-            console.log(fActor);
-            page.evaluate(function() {
+                console.log(firstActor);
+                page.evaluate(function() {
                 document.querySelector("a.layer_close").click();
+                }, 10000);
+                console.log(i);
+                if(i === -1) {
+                    phantom.exit();
+                }
             });
         } 
-        phantom.exit();
     }
 });
 
