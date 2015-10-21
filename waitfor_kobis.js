@@ -65,24 +65,43 @@ page.open("http://www.kobis.or.kr/kobis/business/stat/boxs/findFormerBoxOfficeLi
         // var txtCnt = firstAn.textContent;
         // console.log(txtCnt);
         console.log("Clicked");
-        waitFor(function() {
-            return page.evaluate(function() {
-                return document.querySelector("li.peopContSub2 + li a");
-            });
-        }, function() {
-            // console.log("the div.staffMore element should be visible now.");
-            console.log("the actor list should be visible now.");
-            var minsik = page.evaluate(function() {
-                if(typeof document.querySelector("li.peopContSub2 + li a") === 'undefined') {
-                    return "Fail";
-                } else {
-                    return document.querySelector("li.peopContSub2 + li a").getAttribute("onclick");
-                }
-            });
-            console.log(minsik);
-            phantom.exit();
-        }); 
+        // waitFor(function() {
+        //     return page.evaluate(function() {
+        //         return document.querySelector("li.peopContSub2 + li a");
+        //     });
+        // }, function() {
+        //     // console.log("the div.staffMore element should be visible now.");
+        //     console.log("the actor list should be visible now.");
+        //     var minsik = page.evaluate(function() {
+        //         if(typeof document.querySelector("li.peopContSub2 + li a") === 'undefined') {
+        //             return "Fail";
+        //         } else {
+        //             return document.querySelector("li.peopContSub2 + li a").getAttribute("onclick");
+        //         }
+        //     });
+        //     console.log(minsik);
+        //     phantom.exit();
+        // }); 
 
+        waitFor(function() {
+                return page.evaluate(function() {
+                    return document.querySelector("li.peopContSub2 + li a");
+                });
+            }, function() {
+                console.log("the actor list should be visible now.");
+                var firstActor = page.evaluate(function() {
+                    if(typeof document.querySelector("li.peopContSub2 + li a") === 'undefined') {
+                        return "Fail";
+                    } else {
+                        return document.querySelector("li.peopContSub2 + li a").getAttribute("onclick");
+                    }
+                });
+                console.log(firstActor);
+                page.evaluate(function() {
+                    document.querySelector("a.layer_close").click();
+                }); 
+                phantom.exit();
+            });
     }
 });
 
